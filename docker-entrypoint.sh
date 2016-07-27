@@ -27,7 +27,7 @@ server {
     auth_basic_user_file ${NGINX_PASSWORD_FILE};
 
     location / {
-        proxy_pass http://${SERVICE_ADDRESS}:${SERVICE_PORT};
+        proxy_pass http://${PROXY_ADDRESS}:${PROXY_PORT};
     }
 }
 EOL
