@@ -28,10 +28,12 @@ services:
 
 ## Environment variables
 ### PROXY_USERNAME
+Defaults to `admin`.
 ### PROXY_PASSWORD
+Defaults to `admin`.
 ### PROXY_HOST
 Host name which proxy will react to (used as a `server_name` directive in nginx conf). Defaults to `_`.
 ### PROXY_PASSTHROUGH
-Specify CIDR addresses which won't require auth.
+Optionally specify CIDR addresses which will bypass authentication.
 ### SERVICE_ADDRESS
 ### SERVICE_PORT
