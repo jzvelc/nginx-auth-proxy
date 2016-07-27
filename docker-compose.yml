@@ -1,0 +1,21 @@
+version: "2"
+
+services:
+  proxy:
+    build: .
+    image: nginx-auth-proxy:latest
+    environment:
+      - PROXY_USERNAME=admin
+      - PROXY_PASSWORD=test
+      - PROXY_PASSTHROUGH=192.168.1.0/24;192.168.2.0/24
+      - SERVICE_ADDRESS=api
+      - SERVICE_PORT=8080
+    ports:
+      - "8090:80"
+    restart: always
+
+  api:
+    image: fkautz/example-go-rest-api
+    ports:
+      - "8080:8080"
+    restart: always
