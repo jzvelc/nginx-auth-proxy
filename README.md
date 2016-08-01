@@ -13,6 +13,7 @@ services:
       - PROXY_USERNAME=admin
       - PROXY_PASSWORD=admin
       - PROXY_PASSTHROUGH=192.168.1.0/24;192.168.2.0/24
+      - PROXY_TRUST=192.168.1.0/24
       - PROXY_ADDRESS=api
       - PROXY_PORT=8080
       - PROXY_PROTOCOL=1
