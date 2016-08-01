@@ -15,6 +15,7 @@ services:
       - PROXY_PASSTHROUGH=192.168.1.0/24;192.168.2.0/24
       - PROXY_ADDRESS=api
       - PROXY_PORT=8080
+      - PROXY_PROTOCOL=1
     ports:
       - "8090:80"
     restart: always
@@ -37,3 +38,5 @@ Host name which proxy will react to (used as a `server_name` directive in nginx 
 Optionally specify CIDR addresses which will bypass authentication.
 ### PROXY_ADDRESS
 ### PROXY_PORT
+### PROXY_PROTOCOL
+Proxy protocol is disabled by default. To enable it set it to `1`.
