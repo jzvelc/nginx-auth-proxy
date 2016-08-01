@@ -45,4 +45,6 @@ server {
 }
 EOL
 
-envsubst < ${NGINX_TEMPLATE_FILE} > /etc/nginx/conf.d/default.conf && nginx -g "daemon off;"
+envsubst < ${NGINX_TEMPLATE_FILE} > /etc/nginx/conf.d/default.conf
+
+nginx -g "daemon off;"
