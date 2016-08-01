@@ -36,7 +36,15 @@ Defaults to `admin`.
 Host name which proxy will react to (used as a `server_name` directive in nginx conf). Defaults to `_`.
 ### PROXY_PASSTHROUGH
 Optionally specify CIDR addresses which will bypass authentication.
+### PROXY_TRUST
+Optionally specify CIDR addresses for `set_real_ip_from` entries.
 ### PROXY_ADDRESS
+Proxy service address.
 ### PROXY_PORT
+Proxy service port.
 ### PROXY_PROTOCOL
 Proxy protocol is disabled by default. To enable it set it to `1`.
+### SERVER_BLOCK_USER_DATA
+Additional config passed to server block.
+### LOCATION_BLOCK_USER_DATA
+Additional config passed to location block.

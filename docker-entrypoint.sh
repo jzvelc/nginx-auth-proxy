@@ -14,16 +14,42 @@ if [[ -n "${PROXY_PASSTHROUGH}" ]]; then
   rules="satisfy any; ${rules}deny all;"
 fi
 
-if [[ "${PROXY_PROTOCOL}" == "1" ]]; then
-  PROXY_PROTOCOL=" proxy_protocol"
-  default_conf="proxy_set_header X-Real-IP \$proxy_protocol_addr;\nproxy_set_header X-Forwarded-Proto tcp;"
-else
-  PROXY_PROTOCOL=""
-  default_conf="proxy_set_header X-Real-IP \$remote_addr;\nproxy_set_header X-Forwarded-Proto \$proxy_x_forwarded_proto;"
+if [[ -n "${PROXY_TRUST}" ]]; then
+  PROXY_TRUST=${PROXY_TRUST//;/$'\n'}
+  for cidr in ${PROXY_TRUST}; do
+    real_ip_from+="set_real_ip_from ${cidr}; "
+  done
 fi
 
-echo -e "${default_conf}" | cat - /etc/nginx/proxy.conf > /etc/nginx/proxy.conf.tmp
+if [[ "${PROXY_PROTOCOL}" == "1" ]]; then
+  PROXY_PROTOCOL=" proxy_protocol"
+  server_conf="real_ip_header proxy_protocol;"
+  proxy_conf="proxy_set_header X-Real-IP \$proxy_protocol_addr;\nproxy_set_header X-Forwarded-Proto tcp;"
+else
+  PROXY_PROTOCOL=""
+  server_conf=""
+  proxy_conf="proxy_set_header X-Real-IP \$remote_addr;\nproxy_set_header X-Forwarded-Proto \$proxy_x_forwarded_proto;"
+fi
+
+# Update proxy conf
+echo -e "${proxy_conf}" | cat - /etc/nginx/proxy.conf > /etc/nginx/proxy.conf.tmp
 mv /etc/nginx/proxy.conf.tmp /etc/nginx/proxy.conf
+
+# Create / update server conf
+if [[ ! -f /etc/nginx/server.conf ]]; then
+echo -e "${server_conf}" > /etc/nginx/server.conf
+else
+  echo -e "${server_conf}" | cat - /etc/nginx/server.conf > /etc/nginx/server.conf.tmp
+  mv /etc/nginx/serverconf.tmp /etc/nginx/server.conf
+fi
+
+# Append user data
+if [[ -n "${LOCATION_BLOCK_USER_DATA}" ]]; then
+  echo -e "${LOCATION_BLOCK_USER_DATA}" >> /etc/nginx/proxy.conf
+fi
+if [[ -n "${SERVER_BLOCK_USER_DATA}" ]]; then
+  echo -e "${SERVER_BLOCK_USER_DATA}" >> /etc/nginx/server.conf
+fi
 
 # Build nginx virtual host file for the service to protect
 cat > ${NGINX_TEMPLATE_FILE} <<EOL
@@ -36,6 +62,10 @@ server {
 
     auth_basic "Protected Service";
     auth_basic_user_file ${NGINX_PASSWORD_FILE};
+
+    ${real_ip_from}
+
+    include /etc/nginx/server.conf;
 
     location / {
         proxy_pass http://${PROXY_ADDRESS}:${PROXY_PORT};
