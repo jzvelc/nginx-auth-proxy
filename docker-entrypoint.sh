@@ -16,18 +16,21 @@ fi
 
 if [[ "${PROXY_PROTOCOL}" == "1" ]]; then
   PROXY_PROTOCOL=" proxy_protocol"
-  default_conf="proxy_set_header X-Real-IP \$proxy_protocol_addr; proxy_set_header X-Forwarded-Proto tcp;"
+  default_conf="proxy_set_header X-Real-IP \$proxy_protocol_addr;\nproxy_set_header X-Forwarded-Proto tcp;"
 else
   PROXY_PROTOCOL=""
-  default_conf="proxy_set_header X-Real-IP \$remote_addr; proxy_set_header X-Forwarded-Proto \$proxy_x_forwarded_proto;"
+  default_conf="proxy_set_header X-Real-IP \$remote_addr;\nproxy_set_header X-Forwarded-Proto \$proxy_x_forwarded_proto;"
 fi
+
+echo -e "${default_conf}" | cat - /etc/nginx/proxy.conf > /etc/nginx/proxy.conf.tmp
+mv /etc/nginx/proxy.conf.tmp /etc/nginx/proxy.conf
 
 # Build nginx virtual host file for the service to protect
 cat > ${NGINX_TEMPLATE_FILE} <<EOL
 include /etc/nginx/helpers.conf;
 server {
-    listen 80 default_server;
-    server_name ${PROXY_HOST}${PROXY_PROTOCOL};
+    listen 80 default_server${PROXY_PROTOCOL};
+    server_name ${PROXY_HOST};
 
     ${rules}
 
@@ -36,8 +39,6 @@ server {
 
     location / {
         proxy_pass http://${PROXY_ADDRESS}:${PROXY_PORT};
-
-        ${default_conf}
 
         include /etc/nginx/proxy.conf;
     }
