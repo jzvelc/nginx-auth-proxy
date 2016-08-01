@@ -24,6 +24,7 @@ fi
 
 # Build nginx virtual host file for the service to protect
 cat > ${NGINX_TEMPLATE_FILE} <<EOL
+include /etc/nginx/helpers.conf;
 server {
     listen 80 default_server;
     server_name ${PROXY_HOST}${PROXY_PROTOCOL};
@@ -35,8 +36,6 @@ server {
 
     location / {
         proxy_pass http://${PROXY_ADDRESS}:${PROXY_PORT};
-
-        include /etc/nginx/helpers.conf;
 
         ${default_conf}
 
