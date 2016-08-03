@@ -21,8 +21,6 @@ if [[ -n "${PROXY_TRUST}" ]]; then
   done
 fi
 
-echo -e "real_ip_header X-Forwarded-For;\nreal_ip_recursive on;" > /etc/nginx/server.conf
-
 # Append user data
 if [[ -n "${SERVER_BLOCK_USER_DATA}" ]]; then
   echo -e "${SERVER_BLOCK_USER_DATA}" >> /etc/nginx/server.conf
