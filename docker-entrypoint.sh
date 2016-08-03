@@ -26,7 +26,10 @@ if [[ -n "${SERVER_BLOCK_USER_DATA}" ]]; then
   echo -e "${SERVER_BLOCK_USER_DATA}" >> /etc/nginx/server.conf
 fi
 if [[ -n "${LOCATION_BLOCK_USER_DATA}" ]]; then
-  echo -e "${LOCATION_BLOCK_USER_DATA}" >> /etc/nginx/proxy.conf
+  echo -e "${LOCATION_BLOCK_USER_DATA}" >> /etc/nginx/location.conf
+fi
+if [[ -n "${PROXY_USER_DATA}" ]]; then
+  echo -e "${PROXY_USER_DATA}" >> /etc/nginx/proxy.conf
 fi
 
 # Build nginx virtual host file for the service to protect
@@ -47,6 +50,8 @@ server {
 
     location / {
         proxy_pass http://${PROXY_ADDRESS}:${PROXY_PORT};
+
+        include /etc/nginx/location.conf;
 
         include /etc/nginx/proxy.conf;
     }

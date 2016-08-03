@@ -46,3 +46,5 @@ Proxy service port.
 Additional config passed to server block.
 ### LOCATION_BLOCK_USER_DATA
 Additional config passed to location block.
+### PROXY_USER_DATA
+Additional config passed to proxy conf.
