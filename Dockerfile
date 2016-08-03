@@ -6,7 +6,7 @@ RUN apt-get update \
   && rm -rf /var/lib/apt/lists/*
 
 COPY helpers.conf /etc/nginx/helpers.conf
-COPY proxy.conf /etc/nginx/proxy.conf
+COPY proxy.conf server.conf /etc/nginx/
 COPY docker-entrypoint.sh /docker-entrypoint.sh
 
 RUN chmod +x /docker-entrypoint.sh
